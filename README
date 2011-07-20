@@ -1,0 +1,22 @@
+A Presentation View for PDF Presentations based on PyQt4 and Poppler
+
+Needs pypoppler-qt4, get it here:
+http://pyqt4-extrawidgets.googlecode.com/files/pypoppler-qt4-20962-fixed.tar.gz
+and install:
+python configure.py
+make
+sudo make install
+
+Usage:
+1. Run: python pdfpresenter.py
+2. Focus on black window
+3. Press 'o' to open a file
+4. Move presentation view to projector/external display
+5. Press 'f' to enter fullscreen mode
+6. Wait for caching to finish
+7. Use right/left arrow keys to go to next/previous slide
+
+TODO:
+- Notes
+- Stopwatch
+- Caching in background thread
