@@ -16,7 +16,11 @@ Usage:
 6. Wait for caching to finish
 7. Use right/left arrow keys to go to next/previous slide
 
+Notes:
+1. Open presentation
+2. Edit notes for each slide
+3. Press ctrl+s to save notes
+
 TODO:
-- Notes
 - Stopwatch
 - Caching in background thread
