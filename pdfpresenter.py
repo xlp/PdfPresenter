@@ -23,6 +23,7 @@ from __future__ import division
 import QtPoppler
 from PyQt4 import QtGui, QtCore
 import sys
+import os.path
 
 class QtPDFViewer(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -43,7 +44,6 @@ class QtPDFViewer(QtGui.QWidget):
         self.next = PDFView(1,self)
                 
         viewbox = QtGui.QHBoxLayout()
-        #viewbox.
         viewbox.addWidget(self.current,1)
         viewbox.addWidget(self.next,1)        
         
@@ -58,11 +58,10 @@ class QtPDFViewer(QtGui.QWidget):
         clockbuttonbox.addWidget(bStop)
         clockbox.addLayout(clockbuttonbox)
         
-        notes = QtGui.QTextEdit()
-        notes.setReadOnly(1)
+        self.notes = Notes()
         bottombox = QtGui.QHBoxLayout()
         bottombox.addLayout(clockbox)
-        bottombox.addWidget(notes)
+        bottombox.addWidget(self.notes)
         
         mainbox = QtGui.QVBoxLayout()
         mainbox.addLayout(viewbox)
@@ -91,19 +90,28 @@ class QtPDFViewer(QtGui.QWidget):
     
     def showFileDialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open File')
-        self.load(filename)
+        if filename !='':
+            self.load(filename)
+            self.notes.read(filename)
+            self.notes.show(self.currentPage)
         
     def prevPage(self):
         if self.currentPage > 0:
             self.currentPage -= 1
             self.update()
+            self.notes.show(self.currentPage)
     
     def nextPage(self):
         if self.currentPage +1 < self.doc.numPages():
             self.currentPage +=1
             self.update()
-    
+            self.notes.show(self.currentPage)
             
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key_S and (event.modifiers() & QtCore.Qt.ControlModifier ):
+            self.notes.save()
+
+
 class PDFView(QtGui.QWidget):
     def __init__(self,offset, parent = None):
         QtGui.QFrame.__init__(self,parent)
@@ -119,15 +127,15 @@ class PDFView(QtGui.QWidget):
             painter.drawImage(target, self.parent().pdfImages[self.parent().currentPage+self.offset])
         else:
             print 'no pixmap'
-        
+
 
 class ProjectorView(QtGui.QDialog):
     def __init__(self, parent = None):
         QtGui.QDialog.__init__(self, parent)
         self.initUI()
 
-        
-    
+
+
     def initUI(self):            
         #self.resize(250, 150)
         
@@ -160,7 +168,8 @@ class ProjectorView(QtGui.QDialog):
             self.showNormal()
         else:
             self.showFullScreen()
-            
+
+
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_F11 or event.key() == QtCore.Qt.Key_F:
             self.toggleFullscreen()
@@ -172,12 +181,54 @@ class ProjectorView(QtGui.QDialog):
         elif event.key() == QtCore.Qt.Key_Right:
             self.parent().nextPage()
             self.update()
-                
+
+class Notes(QtGui.QTextEdit):
+    def __init__(self, parent = None):
+        QtGui.QTextEdit.__init__(self, parent)
+        self.notes = dict()
+        self.setReadOnly(1)
+        self.current = None
+        self.connect(self, QtCore.SIGNAL('textChanged()'), self.textEdited)
             
-        
+    def read(self, filename):
+        self.notesfile = os.path.splitext(str(filename))[0]+'.notes'
+        self.setReadOnly(0)
+        if os.path.isfile(self.notesfile):
+            with open(self.notesfile) as f:
+                print 'Reading notes...'
+                for line in f:
+                    if '==XXslide' in line:
+                        slide = line.strip()
+                        self.notes[slide] =  ''
+                    else:
+                        self.notes[slide] += line
+
+    def save(self):
+        if len(self.notes) > 0:
+            print 'Saving notes'
+            with open(self.notesfile, 'w') as f:
+                for id in self.notes.keys():
+                    f.write(id)
+                    f.write('\n')
+                    f.write(self.notes[id])
+                    f.write('\n')
+        else:
+            print 'No notes to save!'
+
+    def show(self, slide):
+        self.current = '==XXslide'+str(slide)
+        if self.notes.has_key(self.current):
+            self.setPlainText(self.notes[self.current])
+        else:
+            self.setPlainText('')
+
+    def textEdited(self):
+        if self.current is not None:
+            self.notes[self.current] = str(self.toPlainText())
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     viewer = QtPDFViewer()
     viewer.show()
     sys.exit(app.exec_())
-    
+
