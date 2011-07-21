@@ -82,6 +82,7 @@ class QtPDFViewer(QtGui.QWidget):
                     scale = pageSize.width()/page.pageSize().width()
                     self.pdfImages[i] = page.renderToImage(scale * 72,scale * 72)
             self.update()
+            self.presenterWindow.update()
     
     def load(self, file):
         self.doc = QtPoppler.Poppler.Document.load(file)
