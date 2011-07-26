@@ -24,6 +24,7 @@ import QtPoppler
 from PyQt4 import QtGui, QtCore
 import sys
 import os.path
+import codecs
 
 class QtPDFViewer(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -195,7 +196,7 @@ class Notes(QtGui.QTextEdit):
         self.notesfile = os.path.splitext(str(filename))[0]+'.notes'
         self.setReadOnly(0)
         if os.path.isfile(self.notesfile):
-            with open(self.notesfile) as f:
+            with codecs.open(self.notesfile, encoding='utf-8', mode='r') as f:
                 print 'Reading notes...'
                 for line in f:
                     if '==XXslide' in line:
@@ -207,7 +208,7 @@ class Notes(QtGui.QTextEdit):
     def save(self):
         if len(self.notes) > 0:
             print 'Saving notes'
-            with open(self.notesfile, 'w') as f:
+            with codecs.open(self.notesfile, encoding='utf-8', mode='w') as f:
                 for id in self.notes.keys():
                     f.write(id)
                     f.write('\n')
@@ -225,7 +226,7 @@ class Notes(QtGui.QTextEdit):
 
     def textEdited(self):
         if self.current is not None:
-            self.notes[self.current] = str(self.toPlainText())
+            self.notes[self.current] = unicode(self.toPlainText())
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
