@@ -187,7 +187,7 @@ class Notes(QtGui.QTextEdit):
         QtGui.QTextEdit.__init__(self, parent)
         self.notes = dict()
         self.setReadOnly(1)
-        self.setFontPointSize(18)
+        self.setFontPointSize(16)
         self.current = None
         self.connect(self, QtCore.SIGNAL('textChanged()'), self.textEdited)
             
