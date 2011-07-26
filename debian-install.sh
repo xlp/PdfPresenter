@@ -9,7 +9,7 @@ rc=0
 echo "Installing required packages"
 # install required packages
 # check if ubuntu (:sudo) or debian (:su) is running
-/usr/bin/lsb_release -i|/bin/grep "Ubuntu" && PRIV="/usr/bin/sudo"
+/usr/bin/lsb_release -i|/bin/grep "Ubuntu" && PRIV="/usr/bin/sudo -i"
 /usr/bin/lsb_release -i|/bin/grep "Debian" && PRIV="/bin/su root -c"
 $PRIV "/usr/bin/aptitude install libpoppler-qt4-dev pyqt4-dev-tools python-qt4-dev python-sip-dev"
 # install pypoppler-qt4
