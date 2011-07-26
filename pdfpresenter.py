@@ -130,15 +130,15 @@ class PDFView(QtGui.QWidget):
             print 'no pixmap'
 
 
-class ProjectorView(QtGui.QDialog):
+class ProjectorView(QtGui.QMainWindow):
     def __init__(self, parent = None):
-        QtGui.QDialog.__init__(self, parent)
+        QtGui.QMainWindow.__init__(self, parent)
         self.initUI()
 
 
 
     def initUI(self):            
-        #self.resize(250, 150)
+        self.resize(640, 480)
         
         self.setWindowTitle('QtPDFPresenter - Presentation Window')
                 
