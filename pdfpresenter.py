@@ -193,7 +193,7 @@ class Notes(QtGui.QTextEdit):
         self.connect(self, QtCore.SIGNAL('textChanged()'), self.textEdited)
             
     def read(self, filename):
-        self.notesfile = os.path.splitext(str(filename))[0]+'.notes'
+        self.notesfile = str(filename)+'.notes'
         self.setReadOnly(0)
         if os.path.isfile(self.notesfile):
             with codecs.open(self.notesfile, encoding='utf-8', mode='r') as f:
