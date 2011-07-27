@@ -9,12 +9,11 @@ sudo make install
 
 Usage:
 1. Run: python pdfpresenter.py
-2. Focus on black window
-3. Press 'o' to open a file
-4. Move presentation view to projector/external display
-5. Press 'f' to enter fullscreen mode
-6. Wait for caching to finish
-7. Use right/left arrow keys to go to next/previous slide
+2. Move presentation view (black window) to projector/external display
+3. Press 'f' to enter fullscreen mode
+4. Press 'o' to open a file
+5. Wait for caching to finish
+6. Use right/left arrow keys to go to next/previous slide
 
 Notes:
 1. Open presentation
