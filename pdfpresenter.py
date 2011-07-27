@@ -174,6 +174,9 @@ class ProjectorView(QtGui.QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_F11 or event.key() == QtCore.Qt.Key_F:
             self.toggleFullscreen()
+        elif event.key() == QtCore.Qt.Key_Q:
+            self.close()
+            self.parent().close()
         elif event.key() == QtCore.Qt.Key_O:
             self.parent().showFileDialog()
         elif event.key() == QtCore.Qt.Key_Left:
