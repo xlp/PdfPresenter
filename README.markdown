@@ -3,9 +3,7 @@
 ## Prerequisites
 Needs pypoppler-qt4, get it [here](http://pyqt4-extrawidgets.googlecode.com/files/pypoppler-qt4-20962-fixed.tar.gz)
 and install:
-python configure.py
-make
-sudo make install
+python configure.py && make && sudo make install
 
 ## Usage:
 1. Run: python pdfpresenter.py
