@@ -20,7 +20,7 @@ python configure.py && make && sudo make install
 3. Press ctrl+s to save notes
 
 ## TODO:
-- Stopwatch
+- Test Stopwatch
 - Caching in background thread
 
 ## Screenshots:

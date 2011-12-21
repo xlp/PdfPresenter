@@ -25,6 +25,8 @@ from PyQt4 import QtGui, QtCore
 import sys
 import os.path
 import codecs
+import threading
+import time
 
 class QtPDFViewer(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -33,27 +35,32 @@ class QtPDFViewer(QtGui.QWidget):
         self.currentPage = 0
         self.doc = None
         self.initUI()
-               
+         
         self.presenterWindow = ProjectorView(self)
         self.presenterWindow.show()
-        
-    
+
+    def updateUhr(self, time):
+        self.uhr.display(time)
+
     def initUI(self):
         
         self.current = PDFView(0,self)
         #self.current.resize(500,500)
         self.next = PDFView(1,self)
-                
+        
         viewbox = QtGui.QHBoxLayout()
         viewbox.addWidget(self.current,1)
         viewbox.addWidget(self.next,1)        
         
-        uhr = QtGui.QLCDNumber()
+        self.uhr = QtGui.QLCDNumber()
+        self.uhr.display("00:00");
         bStart = QtGui.QPushButton('Start')
         bStop = QtGui.QPushButton('Stop')
+        self.connect(bStart, QtCore.SIGNAL("clicked()"), self.startButton);
+        self.connect(bStop, QtCore.SIGNAL("clicked()"), self.stopButton);
         
         clockbox = QtGui.QVBoxLayout()
-        clockbox.addWidget(uhr)
+        clockbox.addWidget(self.uhr)
         clockbuttonbox = QtGui.QHBoxLayout()
         clockbuttonbox.addWidget(bStart)
         clockbuttonbox.addWidget(bStop)
@@ -68,7 +75,14 @@ class QtPDFViewer(QtGui.QWidget):
         mainbox.addLayout(viewbox)
         mainbox.addLayout(bottombox,0)
         self.setLayout(mainbox)
-        
+        self.ptimer = PauseableTimer(None, self.updateUhr)
+
+    def startButton(self):
+        self.ptimer.start()
+
+    def stopButton(self):
+        self.ptimer.stop()
+
     def renderImages(self):
         # TODO: threaded!!
         self.pdfImages = dict()
@@ -177,6 +191,7 @@ class ProjectorView(QtGui.QMainWindow):
         elif event.key() == QtCore.Qt.Key_Q:
             self.close()
             self.parent().close()
+            self.parent().ptimer.stop()
         elif event.key() == QtCore.Qt.Key_O:
             self.parent().showFileDialog()
         elif event.key() == QtCore.Qt.Key_Left:
@@ -230,6 +245,27 @@ class Notes(QtGui.QTextEdit):
     def textEdited(self):
         if self.current is not None:
             self.notes[self.current] = unicode(self.toPlainText())
+
+class PauseableTimer:
+    def __init__(self, parent, updatefunc):
+        self.old_seconds = 0    # seconds which have passed during an older run
+        self.reference = 0      # the time this run of the timer has started
+        self.enable = False     # we don't start right now
+        self.updatefunc = updatefunc  # the function that is called to update the GUI
+    def incrementer(self):
+        self.updatefunc(self.formatTime(time.time() - self.reference + self.old_seconds))
+        if (self.enable):
+            threading.Timer(0.5, self.incrementer).start()
+        else:
+            self.old_seconds += (time.time() - self.reference)
+    def start(self):
+        self.reference = time.time()
+        self.enable = True
+        self.incrementer()
+    def stop(self):
+        self.enable = False
+    def formatTime(self, seconds):
+        return "{0:02d}:{1:02d}".format((int(seconds / 60)), (int(seconds % 60)))
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
